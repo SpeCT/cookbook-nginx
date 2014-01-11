@@ -36,12 +36,18 @@ bash 'extract_luajit' do
     tar xzf #{luajit_src_filename} -C #{luajit_extract_path}
     cd luajit-#{node['nginx']['luajit']['version']}/LuaJIT-#{node['nginx']['luajit']['version']}
     make && make install
-    EXPORT LUAJIT_INC="/usr/local/include/luajit-2.0"
-    EXPORT LUAJIT_LIB="usr/local/lib"
+    export LUAJIT_INC="/usr/local/include/luajit-2.0"
+    export LUAJIT_LIB="usr/local/lib"
   EOH
   not_if { ::File.exists?(luajit_extract_path) }
 end
 
-package 'lua-devel' do
-  action :install
+if platform_family?('debian')
+  package 'liblua5.1-dev' do
+    action :install
+  end
+else
+  package 'lua-devel' do
+    action :install
+  end
 end
